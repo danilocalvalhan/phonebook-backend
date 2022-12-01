@@ -1,4 +1,5 @@
-const app = require("express")();
+const express = require("express");
+const app = express();
 
 let persons = [
 	{
@@ -22,6 +23,8 @@ let persons = [
 		number: "39-23-6423122",
 	},
 ];
+
+app.use(express.json());
 
 app.get("/info", (request, response) => {
 	const currentDate = new Date();
@@ -47,6 +50,17 @@ app.delete("/api/persons/:id", (request, response) => {
 
 	response.status(204).end();
 });
+
+app.post("/api/persons", (request, response) => {
+	const randomId = Math.floor(Math.random()*(10**9))
+	const newPerson = request.body
+	console.log(newPerson, randomId)
+	newPerson.id = randomId
+	persons = persons.concat(newPerson)
+
+	response.status(201)
+	response.json(newPerson)
+})
 
 const PORT = 3001;
 app.listen(PORT);
