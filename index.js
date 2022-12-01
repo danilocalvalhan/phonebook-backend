@@ -52,15 +52,28 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
-	const randomId = Math.floor(Math.random()*(10**9))
-	const newPerson = request.body
-	console.log(newPerson, randomId)
-	newPerson.id = randomId
-	persons = persons.concat(newPerson)
+	const newPerson = request.body;
+	if (newPerson.name === undefined || newPerson.number === undefined) {
+		return response.status(400).json({
+			error: "name or number is missing",
+		});
+	} else if (
+		persons.find(
+			(person) =>
+				person.name.toLowerCase().trim() ===
+				newPerson.name.toLowerCase().trim()
+		)
+	) {
+		return response.status(409).json({
+			error: "name must be unique",
+		});
+	} else {
+		const randomId = Math.floor(Math.random() * 10 ** 9);
+		persons = persons.concat({ ...newPerson, id: randomId });
 
-	response.status(201)
-	response.json(newPerson)
-})
+		return response.status(201).json(newPerson);
+	}
+});
 
 const PORT = 3001;
 app.listen(PORT);
