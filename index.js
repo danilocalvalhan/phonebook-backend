@@ -25,8 +25,22 @@ let persons = [
 	},
 ];
 
+morgan.token("post_data", (request, response) => {
+	const bodyString = JSON.stringify(request.body) 
+	return bodyString.length > 2 ? bodyString : ''
+})
 app.use(express.json());
-app.use(morgan('tiny'));
+app.use(morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms',
+	tokens.post_data(req, res)  
+  ].join(' ')
+}));
+
 
 app.get("/info", (request, response) => {
 	const currentDate = new Date();
