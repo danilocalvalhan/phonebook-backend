@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
 
 let persons = [
@@ -26,21 +27,26 @@ let persons = [
 ];
 
 morgan.token("post_data", (request, response) => {
-	const bodyString = JSON.stringify(request.body) 
-	return bodyString.length > 2 ? bodyString : ''
-})
+	const bodyString = JSON.stringify(request.body);
+	return bodyString.length > 2 ? bodyString : "";
+});
+app.use(cors());
 app.use(express.json());
-app.use(morgan(function (tokens, req, res) {
-  return [
-    tokens.method(req, res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    tokens.res(req, res, 'content-length'), '-',
-    tokens['response-time'](req, res), 'ms',
-	tokens.post_data(req, res)  
-  ].join(' ')
-}));
-
+app.use(express.static("build"));
+app.use(
+	morgan(function (tokens, req, res) {
+		return [
+			tokens.method(req, res),
+			tokens.url(req, res),
+			tokens.status(req, res),
+			tokens.res(req, res, "content-length"),
+			"-",
+			tokens["response-time"](req, res),
+			"ms",
+			tokens.post_data(req, res),
+		].join(" ");
+	})
+);
 
 app.get("/info", (request, response) => {
 	const currentDate = new Date();
@@ -69,7 +75,7 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
 	const newPerson = request.body;
-	if (newPerson.name === undefined || newPerson.number === undefined) {
+	if (newPerson.name == false || newPerson.number == false) {
 		return response.status(400).json({
 			error: "name or number is missing",
 		});
@@ -87,7 +93,7 @@ app.post("/api/persons", (request, response) => {
 		const randomId = Math.floor(Math.random() * 10 ** 9);
 		persons = persons.concat({ ...newPerson, id: randomId });
 
-		return response.status(201).json(newPerson);
+		return response.status(201).json({ ...newPerson, id: randomId });
 	}
 });
 
