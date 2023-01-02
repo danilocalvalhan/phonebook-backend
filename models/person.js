@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const url = process.env.MONGODB_URI;
 
@@ -13,14 +14,32 @@ mongoose
 		console.log("Unable to connect to MongoDB, error: ", error.message);
 	});
 
+function validator(val) {
+	const numSplitArr = val.split("-").length === 2 ? val.split("-")[0] : false;
+	if (numSplitArr.length === 2 || numSplitArr.length === 3) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 const personSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		minLength: 3,
 		required: true,
-	}, 
-	number: String,
+		unique: true,
+		uniqueCaseInsensitive: true,
+	},
+	number: {
+		type: String,
+		minLength: 8,
+		validate: validator,
+		required: true,
+	},
 });
+
+personSchema.plugin(uniqueValidator);
 
 personSchema.set("toJSON", {
 	transform: (document, returnObject) => {
