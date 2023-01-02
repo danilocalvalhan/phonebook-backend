@@ -7,7 +7,7 @@ console.log("Connecting to ", url);
 mongoose.set("strictQuery", true);
 mongoose
 	.connect(url)
-	.then((result) => {
+	.then(() => {
 		console.log("Connected to MongoDB");
 	})
 	.catch((error) => {

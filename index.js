@@ -5,7 +5,7 @@ const cors = require("cors");
 const Person = require("./models/person");
 const app = express();
 
-morgan.token("post_data", (request, response) => {
+morgan.token("post_data", (request) => {
 	const bodyString = JSON.stringify(request.body);
 	return bodyString.length > 2 ? bodyString : "";
 });
@@ -80,7 +80,7 @@ app.post("/api/persons", (request, response, next) => {
 	} else {
 		newPerson
 			.save()
-			.then((result) => {
+			.then(() => {
 				return response.status(201).json(newPerson);
 			})
 			.catch((error) => next(error));
